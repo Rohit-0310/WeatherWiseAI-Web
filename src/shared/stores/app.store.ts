@@ -14,7 +14,14 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
-      currentLocation: null,
+      currentLocation: {
+        id: 1261481,
+        name: "New Delhi",
+        region: "Delhi",
+        country: "India",
+        latitude: 28.6139,
+        longitude: 77.2090
+      },
       units: 'Metric',
       setCurrentLocation: (location) => set({ currentLocation: location }),
       setUnits: (units) => set({ units }),

@@ -2,9 +2,23 @@
 
 import * as React from 'react';
 import { motion } from 'framer-motion';
-import { Cloud, CloudLightning, CloudRain, Snowflake, Sun, MapPin, Droplets, Wind, Leaf, Sun as SunIcon } from 'lucide-react';
+import { Cloud, CloudLightning, CloudRain, Snowflake, Sun, MapPin, Droplets, Wind, Leaf, Sun as SunIcon, Eye } from 'lucide-react';
 import { useCurrentWeather } from '../hooks/use-weather';
 import { useAppStore } from '@/shared/stores/app.store';
+
+const getWindDirection = (degree: number) => {
+  const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+  return directions[Math.round(degree / 45) % 8];
+};
+
+const getAqiDetails = (aqi: number) => {
+  if (aqi <= 50) return { label: 'Good', color: 'text-emerald-400', border: 'border-emerald-500/30' };
+  if (aqi <= 100) return { label: 'Moderate', color: 'text-yellow-400', border: 'border-yellow-500/30' };
+  if (aqi <= 150) return { label: 'Unhealthy for Sensitive Groups', color: 'text-orange-400', border: 'border-orange-500/30' };
+  if (aqi <= 200) return { label: 'Unhealthy', color: 'text-red-400', border: 'border-red-500/30' };
+  if (aqi <= 300) return { label: 'Very Unhealthy', color: 'text-purple-400', border: 'border-purple-500/30' };
+  return { label: 'Hazardous', color: 'text-rose-600', border: 'border-rose-600/30' };
+};
 
 const renderIcon = (code: string, className = "w-12 h-12") => {
   switch (code) {
@@ -23,7 +37,7 @@ export function WeatherHero() {
 
   if (isLoading || !weather || !currentLocation) {
     return (
-      <div className="w-full min-h-[300px] rounded-3xl bg-background/20 backdrop-blur-xl border border-border/10 p-8 animate-pulse flex flex-col justify-between">
+      <div className="w-full min-h-[300px] p-6 animate-pulse flex flex-col justify-between">
         <div className="w-48 h-8 bg-foreground/10 rounded-lg mb-8" />
         <div className="flex gap-8">
           <div className="w-32 h-32 bg-foreground/10 rounded-2xl" />
@@ -39,76 +53,95 @@ export function WeatherHero() {
   const tempUnit = units === 'Metric' ? '°C' : '°F';
 
   return (
-    <div className="w-full relative overflow-hidden flex flex-col md:flex-row gap-6 items-start bg-background/20 backdrop-blur-xl border border-border/10 p-6 rounded-3xl shadow-2xl h-full">
-      <div className="flex-1 flex flex-col">
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="flex items-center gap-2 mb-6"
-        >
+    <div className="w-full relative flex flex-col h-full pt-4">
+      {/* Location */}
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex flex-col mb-10"
+      >
+        <div className="flex items-center gap-2">
           <MapPin className="w-5 h-5 text-muted-foreground" />
           <h2 className="text-xl font-medium tracking-wide">
             {currentLocation.name}, {currentLocation.country}
           </h2>
-        </motion.div>
-
-        <div className="flex flex-col sm:flex-row items-center gap-6 mb-6">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ type: "spring", bounce: 0.4 }}
-            className="text-[80px] font-light leading-none tracking-tighter"
-          >
-            {Math.round(weather.temperature)}°
-          </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-col items-center sm:items-start"
-          >
-            <div className="mb-2">
-              <motion.div 
-                animate={{ y: [0, -10, 0] }}
-                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-              >
-                {renderIcon(weather.condition.code, "w-20 h-20")}
-              </motion.div>
-            </div>
-            <h3 className="text-2xl font-semibold tracking-wide">{weather.condition.description}</h3>
-            <p className="text-muted-foreground">Feels like {Math.round(weather.feelsLike || weather.temperature)}°</p>
-          </motion.div>
         </div>
+        <p className="text-sm text-muted-foreground ml-7 mt-1">
+          {weather.latitude.toFixed(4)}° N, {weather.longitude.toFixed(4)}° E
+        </p>
+      </motion.div>
 
-        {/* Highlight Pills */}
+      {/* Main Weather */}
+      <div className="flex flex-col md:flex-row items-start md:items-center gap-8 mb-10 flex-1">
+        {/* Temperature Block */}
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", bounce: 0.4 }}
+          className="flex flex-col items-center sm:items-start"
+        >
+          <div className="text-[100px] font-light leading-none tracking-tighter drop-shadow-lg">
+            {Math.round(weather.temperature)}°
+          </div>
+          <div className="text-base text-muted-foreground mt-2 font-medium">
+            Feels like {Math.round(weather.feelsLike)}°
+          </div>
+        </motion.div>
+        
+        {/* Condition Block */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="flex flex-wrap gap-3"
+          transition={{ delay: 0.2 }}
+          className="flex items-center gap-6"
         >
-          <Pill icon={Leaf} label="AQI" value="42" sub="Good" color="text-emerald-400" border="border-emerald-500/30" />
-          <Pill icon={CloudRain} label="Rain" value="17%" color="text-blue-400" border="border-blue-500/30" />
-          <Pill icon={Wind} label="Wind" value={`${weather.windSpeed} km/h`} sub="SW" color="text-purple-400" border="border-purple-500/30" />
-          <Pill icon={Droplets} label="Humidity" value={`${weather.humidity}%`} color="text-blue-300" border="border-blue-400/30" />
-          <Pill icon={SunIcon} label="UV Index" value={`${weather.uvIndex || 4}`} sub="Moderate" color="text-yellow-400" border="border-yellow-500/30" />
+          <motion.div 
+            animate={{ y: [0, -10, 0] }}
+            transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+          >
+            {renderIcon(weather.condition.code, "w-28 h-28")}
+          </motion.div>
+          <div className="flex flex-col">
+            <h3 className="text-3xl font-semibold tracking-wide mb-1 drop-shadow-md">{weather.condition.description}</h3>
+            <p className="text-muted-foreground text-sm mb-3">Cloudy skies. Pleasantly warm.</p>
+            <div className="flex items-center gap-4 text-sm font-medium">
+              <span className="flex items-center gap-1 text-foreground/90"><span className="text-xl leading-none">↑</span> {Math.round(weather.maxTemperature)}°</span>
+              <span className="flex items-center gap-1 text-foreground/90"><span className="text-xl leading-none">↓</span> {Math.round(weather.minTemperature)}°</span>
+            </div>
+          </div>
         </motion.div>
       </div>
+
+      {/* Highlight Pills */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="flex flex-wrap gap-4 w-full items-center mt-auto pb-4"
+      >
+        <Pill icon={Leaf} label="AQI" value={weather.aqi} sub={getAqiDetails(weather.aqi).label} color={getAqiDetails(weather.aqi).color} />
+        <Pill icon={CloudRain} label="Rain" value={`${weather.precipitationChance}%`} color="text-blue-400" />
+        <Pill icon={Wind} label="Wind" value={`${weather.windSpeed} ${units === 'Metric' ? 'km/h' : 'mph'}`} sub={getWindDirection(weather.windDirection)} color="text-purple-400" />
+        <Pill icon={Droplets} label="Humidity" value={`${weather.humidity}%`} color="text-blue-300" />
+        <Pill icon={Eye} label="Visibility" value={`${weather.visibility > 1000 ? Math.round(weather.visibility / 1000) + ' km' : weather.visibility + ' m'}`} color="text-indigo-400" />
+        <Pill icon={SunIcon} label="UV Index" value={`${weather.uvIndex}`} sub={weather.uvIndex > 5 ? "High" : "Moderate"} color="text-yellow-400" />
+      </motion.div>
     </div>
   );
 }
 
-function Pill({ icon: Icon, label, value, sub, color, border }: any) {
+function Pill({ icon: Icon, label, value, sub, color }: any) {
   return (
-    <div className={`flex items-center gap-3 px-3 py-1.5 rounded-2xl bg-background/30 backdrop-blur-md border ${border} shadow-lg`}>
-      <Icon className={`w-4 h-4 ${color}`} />
+    <div className={`flex items-center gap-3 px-4 py-2 rounded-2xl bg-slate-900/40 backdrop-blur-md shadow-lg border border-slate-700/50`}>
+      <Icon className={`w-5 h-5 ${color}`} />
       <div className="flex flex-col">
         <div className="flex items-baseline gap-1.5">
-          <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{label}</span>
-          <span className="text-sm font-bold">{value}</span>
+          <span className="text-[11px] text-muted-foreground uppercase tracking-wider">{label}</span>
         </div>
-        {sub && <span className={`text-[10px] font-medium ${color}`}>{sub}</span>}
+        <div className="flex items-baseline gap-2">
+          <span className="text-sm font-bold text-slate-100">{value}</span>
+          {sub && <span className={`text-[11px] font-medium ${color}`}>{sub}</span>}
+        </div>
       </div>
     </div>
   );
