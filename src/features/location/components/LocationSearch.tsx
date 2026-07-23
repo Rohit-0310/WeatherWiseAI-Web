@@ -6,12 +6,15 @@ import { useLocationSearch } from '../hooks/use-location';
 import { useDebounce } from '@/shared/hooks/use-debounce';
 import { useAppStore } from '@/shared/stores/app.store';
 import { Location } from '@/shared/types/location';
+import { LocationService } from '../api/location.service';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { LocateFixed } from 'lucide-react';
 
 export function LocationSearch() {
   const [open, setOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [isLocating, setIsLocating] = React.useState(false);
   const debouncedSearch = useDebounce(searchTerm, 500);
   const wrapperRef = React.useRef<HTMLDivElement>(null);
 
@@ -48,6 +51,34 @@ export function LocationSearch() {
             if (searchTerm.length > 0) setOpen(true);
           }}
         />
+        <button 
+          className={cn(
+            "ml-2 shrink-0 p-2 rounded-full hover:bg-background/20 transition-colors",
+            isLocating && "animate-pulse text-primary"
+          )}
+          onClick={() => {
+            if (!navigator.geolocation) return;
+            setIsLocating(true);
+            navigator.geolocation.getCurrentPosition(
+              async (pos) => {
+                try {
+                  const location = await LocationService.reverseGeocode(pos.coords.latitude, pos.coords.longitude);
+                  if (location) setCurrentLocation(location);
+                } catch (e) {
+                  console.error('Failed to get location:', e);
+                } finally {
+                  setIsLocating(false);
+                }
+              },
+              (err) => {
+                console.error(err);
+                setIsLocating(false);
+              }
+            );
+          }}
+        >
+          <LocateFixed className="h-4 w-4 text-foreground/70" />
+        </button>
       </div>
 
       {open && (

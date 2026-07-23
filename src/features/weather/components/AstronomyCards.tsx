@@ -108,11 +108,15 @@ export function AstronomyCards() {
             )}
           </svg>
           
-          <div className="absolute bottom-[-10px] left-0 text-xs flex flex-col items-start">
-            <span className="font-semibold text-foreground/90">{format(sunrise, 'hh:mm a')}</span>
-          </div>
-          <div className="absolute bottom-[-10px] right-0 text-xs flex flex-col items-end">
-            <span className="font-semibold text-foreground/90">{format(sunset, 'hh:mm a')}</span>
+          <div className="flex justify-between w-full pt-4">
+            <div className="flex flex-col">
+              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-0.5">Sunrise</span>
+              <span className="text-sm font-semibold text-foreground/90">{format(sunrise, 'hh:mm a')}</span>
+            </div>
+            <div className="flex flex-col text-right">
+              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-0.5">Sunset</span>
+              <span className="text-sm font-semibold text-foreground/90">{format(sunset, 'hh:mm a')}</span>
+            </div>
           </div>
         </div>
       </div>

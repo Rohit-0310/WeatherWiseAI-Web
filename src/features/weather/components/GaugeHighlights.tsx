@@ -4,37 +4,42 @@ import * as React from 'react';
 import { motion } from 'framer-motion';
 import { Wind, Droplets, Gauge as GaugeIcon, Eye, Cloud, Leaf } from 'lucide-react';
 import { useCurrentWeather } from '../hooks/use-weather';
+import { useAppStore } from '@/shared/stores/app.store';
 
-const SVG_GAUGE = (
-  <svg viewBox="0 0 100 50" className="w-full h-auto overflow-visible mt-2">
-    <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="6" strokeLinecap="round" />
-    <motion.path 
-      d="M 10 50 A 40 40 0 0 1 90 50" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="6" 
-      strokeLinecap="round"
-      strokeDasharray="125"
-      initial={{ strokeDashoffset: 125 }}
-      animate={{ strokeDashoffset: 40 }} // Dynamic based on value
-      transition={{ duration: 1.5, ease: "easeOut" }}
-      className="drop-shadow-[0_0_8px_currentColor]"
-    />
-  </svg>
-);
+const getAqiDetails = (aqi: number) => {
+  if (aqi <= 50) return { label: 'Good', color: 'text-emerald-400' };
+  if (aqi <= 100) return { label: 'Moderate', color: 'text-yellow-400' };
+  if (aqi <= 150) return { label: 'Unhealthy (SG)', color: 'text-orange-400' };
+  if (aqi <= 200) return { label: 'Unhealthy', color: 'text-red-400' };
+  if (aqi <= 300) return { label: 'Very Unhealthy', color: 'text-purple-400' };
+  return { label: 'Hazardous', color: 'text-rose-600' };
+};
+
+const getWindDirection = (degree: number) => {
+  const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+  return directions[Math.round(degree / 45) % 8];
+};
+
+
 
 export function GaugeHighlights() {
   const { data: weather, isLoading } = useCurrentWeather();
+  const { units } = useAppStore();
 
   if (isLoading || !weather) return null;
 
+  const aqiInfo = getAqiDetails(weather.aqi);
+  const windUnit = units === 'Metric' ? 'km/h' : 'mph';
+  const visibilityVal = weather.visibility > 1000 ? Math.round(weather.visibility / 1000) : weather.visibility;
+  const visibilityUnit = weather.visibility > 1000 ? 'km' : 'm';
+
   const gauges = [
-    { label: 'Air Quality', value: '42', unit: 'Good', icon: Leaf, color: 'text-emerald-400' },
-    { label: 'Humidity', value: `${weather.humidity}%`, unit: 'Comfortable', icon: Droplets, color: 'text-blue-400' },
-    { label: 'Wind', value: weather.windSpeed.toString(), unit: 'km/h SW', icon: Wind, color: 'text-purple-400' },
-    { label: 'Pressure', value: weather.pressure?.toString() || '1029', unit: 'hPa Steady', icon: GaugeIcon, color: 'text-pink-400' },
-    { label: 'Visibility', value: weather.visibility?.toString() || '10', unit: 'km Excellent', icon: Eye, color: 'text-teal-400' },
-    { label: 'Cloud Cover', value: `${weather.cloudCover || 0}%`, unit: 'Overcast', icon: Cloud, color: 'text-blue-300' },
+    { label: 'Air Quality', value: weather.aqi.toString(), unit: aqiInfo.label, icon: Leaf, color: aqiInfo.color, percentage: Math.min((weather.aqi / 300) * 100, 100) },
+    { label: 'Humidity', value: `${weather.humidity}%`, unit: weather.humidity > 60 ? 'High' : 'Comfortable', icon: Droplets, color: 'text-blue-400', percentage: weather.humidity },
+    { label: 'Wind', value: weather.windSpeed.toString(), unit: `${windUnit} ${getWindDirection(weather.windDirection)}`, icon: Wind, color: 'text-purple-400', percentage: Math.min((weather.windSpeed / 50) * 100, 100) },
+    { label: 'Pressure', value: Math.round(weather.pressure).toString(), unit: 'hPa', icon: GaugeIcon, color: 'text-pink-400', percentage: Math.min(((weather.pressure - 950) / 100) * 100, 100) },
+    { label: 'Visibility', value: visibilityVal.toString(), unit: visibilityUnit, icon: Eye, color: 'text-teal-400', percentage: Math.min((weather.visibility / 10000) * 100, 100) },
+    { label: 'Cloud Cover', value: `${weather.cloudCover}%`, unit: weather.cloudCover > 50 ? 'Overcast' : 'Clear', icon: Cloud, color: 'text-blue-300', percentage: weather.cloudCover },
   ];
 
   return (
@@ -55,7 +60,21 @@ export function GaugeHighlights() {
             </div>
             
             <div className={`relative w-full ${gauge.color}`}>
-              {SVG_GAUGE}
+              <svg viewBox="0 0 100 50" className="w-full h-auto overflow-visible mt-2">
+                <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="6" strokeLinecap="round" />
+                <motion.path 
+                  d="M 10 50 A 40 40 0 0 1 90 50" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="6" 
+                  strokeLinecap="round"
+                  strokeDasharray="125"
+                  initial={{ strokeDashoffset: 125 }}
+                  animate={{ strokeDashoffset: 125 - (125 * (gauge.percentage / 100)) }} // Dynamic based on value
+                  transition={{ duration: 1.5, ease: "easeOut" }}
+                  className="drop-shadow-[0_0_8px_currentColor]"
+                />
+              </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-end pb-1 text-foreground">
                 <span className="text-lg font-bold">{gauge.value}</span>
                 <span className="text-[10px] text-muted-foreground -mt-1">{gauge.unit}</span>

@@ -11,13 +11,18 @@ export interface CurrentWeather {
   windSpeed: number;
   condition: WeatherCondition;
   units: string;
-  // Mocked/extended fields for premium UI until backend fully supports them
-  feelsLike?: number;
-  humidity?: number;
-  pressure?: number;
-  visibility?: number;
-  uvIndex?: number;
-  cloudCover?: number;
+  feelsLike: number;
+  humidity: number;
+  pressure: number;
+  visibility: number;
+  uvIndex: number;
+  windDirection: number;
+  isDay: number;
+  aqi: number;
+  maxTemperature: number;
+  minTemperature: number;
+  cloudCover: number;
+  precipitationChance: number;
   sunrise?: string;
   sunset?: string;
 }
@@ -36,7 +41,7 @@ export interface WeeklyForecastData {
   minTemperature: number;
   maxWindSpeed: number;
   condition: WeatherCondition;
-  precipitationChance?: number; // Mocked
+  precipitationChance: number;
 }
 
 export interface HourlyForecastResponse {
