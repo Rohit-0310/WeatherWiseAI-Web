@@ -40,10 +40,10 @@ export default function DashboardPage() {
       >
         {/* Top Row: Hero & Astronomy */}
         <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 h-full">
             <WeatherHero />
           </div>
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 h-full">
             <AstronomyCards />
           </div>
         </div>

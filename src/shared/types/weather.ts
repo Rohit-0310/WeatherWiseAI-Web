@@ -1,6 +1,7 @@
 export interface WeatherCondition {
   code: string;
   description: string;
+  providerCode?: number;
 }
 
 export interface CurrentWeather {
