@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/purity */
 'use client';
 
 import * as React from 'react';
@@ -8,23 +9,22 @@ interface Props {
 }
 
 export function WindEffects({ windSpeed }: Props) {
-  // Windy > 25, Storm > 50
-  if (windSpeed <= 25) return null;
-
   const isStorm = windSpeed > 50;
   const numLeaves = isStorm ? 30 : 10;
 
-  const leaves = Array.from({ length: numLeaves }).map((_, i) => ({
+  const leaves = React.useMemo(() => Array.from({ length: numLeaves }).map((_, i) => ({
     id: i,
     y: Math.random() * 100,
-    duration: (Math.random() * 2 + 1) * (isStorm ? 0.5 : 1), // Faster if storm
+    duration: (Math.random() * 2 + 1) * (isStorm ? 0.5 : 1),
     delay: Math.random() * 3,
-    rotate: Math.random() * 720
-  }));
+    rotate: Math.random() * 720,
+    drift: (Math.random() - 0.5) * 40
+  })), [numLeaves, isStorm]);
+
+  if (windSpeed <= 25) return null;
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-30">
-      {/* Flying Leaves / Debris */}
       {leaves.map((leaf) => (
         <motion.div
           key={`leaf-${leaf.id}`}
@@ -32,7 +32,7 @@ export function WindEffects({ windSpeed }: Props) {
           style={{ top: `${leaf.y}%`, left: '-5%' }}
           animate={{
             x: ['0vw', '110vw'],
-            y: [`0vh`, `${(Math.random() - 0.5) * 40}vh`],
+            y: ['0vh', `${leaf.drift}vh`],
             rotate: leaf.rotate
           }}
           transition={{
@@ -44,19 +44,11 @@ export function WindEffects({ windSpeed }: Props) {
         />
       ))}
 
-      {/* Extreme Storm Camera Shake (Applied to a subtle vignette overlay) */}
       {isStorm && (
         <motion.div
-          className="absolute inset-0 shadow-[inset_0_0_150px_rgba(0,0,0,0.5)]"
-          animate={{
-            x: [-2, 2, -2, 2, 0],
-            y: [-2, 2, 2, -2, 0]
-          }}
-          transition={{
-            duration: 0.5,
-            repeat: Infinity,
-            repeatType: "mirror"
-          }}
+          className="absolute inset-0 bg-slate-900/10 pointer-events-none"
+          animate={{ opacity: [0, 0.1, 0, 0.2, 0] }}
+          transition={{ duration: 0.5, repeat: Infinity, ease: "linear" }}
         />
       )}
     </div>

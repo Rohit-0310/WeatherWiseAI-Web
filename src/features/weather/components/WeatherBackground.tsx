@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAppStore } from '@/shared/stores/app.store';
 import { useCurrentWeather } from '../hooks/use-weather';
 import { useAstronomy } from '../hooks/use-astronomy';
 import { ClearSky } from './animations/ClearSky';
