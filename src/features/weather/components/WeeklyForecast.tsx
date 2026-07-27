@@ -3,8 +3,9 @@
 import * as React from 'react';
 import { motion } from 'framer-motion';
 import { format, parseISO, isToday } from 'date-fns';
-import { Cloud, CloudLightning, CloudRain, Snowflake, Sun, Droplets } from 'lucide-react';
+import { Cloud, CloudLightning, CloudRain, Snowflake, Sun } from 'lucide-react';
 import { useWeeklyForecast } from '../hooks/use-forecast';
+import { useAppStore } from '@/shared/stores/app.store';
 import { WeeklyForecastData } from '@/shared/types/weather';
 
 const renderIcon = (code: string, className = "w-6 h-6") => {
@@ -20,6 +21,8 @@ const renderIcon = (code: string, className = "w-6 h-6") => {
 
 export function WeeklyForecast() {
   const { data: forecast, isLoading } = useWeeklyForecast();
+  const { preferences } = useAppStore();
+  const tempUnit = preferences.temperature === 'Celsius' ? '°C' : '°F';
 
   if (isLoading || !forecast) {
     return (
@@ -90,8 +93,8 @@ export function WeeklyForecast() {
               </div>
 
               {/* Temperature Bar */}
-              <div className="flex-1 flex items-center gap-3 justify-end min-w-[120px] ml-2">
-                <span className="text-sm font-medium w-6 text-right text-foreground/70">{minTemp}°</span>
+              <div className="flex-1 flex items-center gap-2 justify-end min-w-[120px] ml-2">
+                <span className="text-sm font-medium w-8 text-right text-foreground/70">{minTemp}{tempUnit}</span>
                 
                 <div className="flex-1 h-[6px] bg-foreground/10 rounded-full overflow-hidden relative w-full shadow-[inset_0_1px_3px_rgba(0,0,0,0.3)]">
                   <motion.div 
@@ -102,7 +105,7 @@ export function WeeklyForecast() {
                   />
                 </div>
                 
-                <span className="text-sm font-semibold w-8 text-right">{maxTemp}°</span>
+                <span className="text-sm font-semibold w-8 text-right">{maxTemp}{tempUnit}</span>
               </div>
             </motion.div>
           );

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Cloud, CloudLightning, CloudRain, Snowflake, Sun, MapPin, Droplets, Wind, Leaf, Sun as SunIcon, Eye } from 'lucide-react';
 import { useCurrentWeather } from '../hooks/use-weather';
 import { useAppStore } from '@/shared/stores/app.store';
+import { formatWindSpeed, formatVisibility } from '@/shared/utils/formatters';
 
 const getWindDirection = (degree: number) => {
   const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
@@ -33,7 +34,7 @@ const renderIcon = (code: string, className = "w-12 h-12") => {
 
 export function WeatherHero() {
   const { data: weather, isLoading } = useCurrentWeather();
-  const { currentLocation, units } = useAppStore();
+  const { currentLocation, units, preferences } = useAppStore();
 
   if (isLoading || !weather || !currentLocation) {
     return (
@@ -80,11 +81,16 @@ export function WeatherHero() {
           transition={{ type: "spring", bounce: 0.4 }}
           className="flex flex-col items-center sm:items-start"
         >
-          <div className="text-[100px] font-light leading-none tracking-tighter drop-shadow-lg">
-            {Math.round(weather.temperature)}°
+          <div className="flex items-start">
+            <span className="text-[100px] sm:text-[120px] font-light leading-[0.8] tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/70 drop-shadow-sm">
+              {Math.round(weather.temperature)}
+            </span>
+            <span className="text-3xl sm:text-4xl mt-2 ml-1 font-medium text-foreground/50 bg-clip-text text-transparent bg-gradient-to-b from-muted-foreground to-muted-foreground/30">
+              {tempUnit}
+            </span>
           </div>
-          <div className="text-base text-muted-foreground mt-2 font-medium">
-            Feels like {Math.round(weather.feelsLike)}°
+          <div className="text-sm sm:text-base text-muted-foreground mt-4 font-medium bg-foreground/5 px-4 py-1.5 rounded-full border border-border/10 shadow-inner flex items-center gap-1">
+            Feels like <span className="text-foreground/90 font-semibold">{Math.round(weather.feelsLike)}{tempUnit}</span>
           </div>
         </motion.div>
         
@@ -105,8 +111,8 @@ export function WeatherHero() {
             <h3 className="text-3xl font-semibold tracking-wide mb-1 drop-shadow-md">{weather.condition.description}</h3>
             <p className="text-muted-foreground text-sm mb-3">Cloudy skies. Pleasantly warm.</p>
             <div className="flex items-center gap-4 text-sm font-medium">
-              <span className="flex items-center gap-1 text-foreground/90"><span className="text-xl leading-none">↑</span> {Math.round(weather.maxTemperature)}°</span>
-              <span className="flex items-center gap-1 text-foreground/90"><span className="text-xl leading-none">↓</span> {Math.round(weather.minTemperature)}°</span>
+              <span className="flex items-center gap-1 text-foreground/90"><span className="text-xl leading-none">↑</span> {Math.round(weather.maxTemperature)}{tempUnit}</span>
+              <span className="flex items-center gap-1 text-foreground/90"><span className="text-xl leading-none">↓</span> {Math.round(weather.minTemperature)}{tempUnit}</span>
             </div>
           </div>
         </motion.div>
@@ -121,16 +127,16 @@ export function WeatherHero() {
       >
         <Pill icon={Leaf} label="AQI" value={weather.aqi} sub={getAqiDetails(weather.aqi).label} color={getAqiDetails(weather.aqi).color} />
         <Pill icon={CloudRain} label="Rain" value={`${weather.precipitationChance}%`} color="text-blue-400" />
-        <Pill icon={Wind} label="Wind" value={`${weather.windSpeed} ${units === 'Metric' ? 'km/h' : 'mph'}`} sub={getWindDirection(weather.windDirection)} color="text-purple-400" />
+        <Pill icon={Wind} label="Wind" value={formatWindSpeed(weather.windSpeed, units, preferences)} sub={getWindDirection(weather.windDirection)} color="text-purple-400" />
         <Pill icon={Droplets} label="Humidity" value={`${weather.humidity}%`} color="text-blue-300" />
-        <Pill icon={Eye} label="Visibility" value={`${weather.visibility > 1000 ? Math.round(weather.visibility / 1000) + ' km' : weather.visibility + ' m'}`} color="text-indigo-400" />
+        <Pill icon={Eye} label="Visibility" value={formatVisibility(weather.visibility, preferences)} color="text-indigo-400" />
         <Pill icon={SunIcon} label="UV Index" value={`${weather.uvIndex}`} sub={weather.uvIndex > 5 ? "High" : "Moderate"} color="text-yellow-400" />
       </motion.div>
     </div>
   );
 }
 
-function Pill({ icon: Icon, label, value, sub, color }: any) {
+function Pill({ icon: Icon, label, value, sub, color }: { icon: React.ElementType, label: string, value: string | number, sub?: string, color: string }) {
   return (
     <div className={`flex items-center gap-3 px-4 py-2 rounded-2xl bg-slate-900/40 backdrop-blur-md shadow-lg border border-slate-700/50`}>
       <Icon className={`w-5 h-5 ${color}`} />
