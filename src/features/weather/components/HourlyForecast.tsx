@@ -27,6 +27,46 @@ export function HourlyForecast() {
   // Use a state for current time to avoid hydration mismatch, though isSameHour is usually fine
   const [now] = React.useState(new Date());
   const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
+  const [timeDisplayMode, setTimeDisplayMode] = React.useState<'location' | 'browser'>('location');
+
+  const timeDiffMs = React.useMemo(() => {
+    if (!forecast?.timezone) return 0;
+    try {
+      const browserNow = new Date();
+      const locationNowStr = browserNow.toLocaleString('en-US', { timeZone: forecast.timezone, hour12: false });
+      const locationNow = new Date(locationNowStr);
+      return browserNow.getTime() - locationNow.getTime();
+    } catch (e) {
+      return 0;
+    }
+  }, [forecast?.timezone]);
+
+  const currentHourInLocation = React.useMemo(() => {
+    if (!forecast?.timezone) return "";
+    try {
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: forecast.timezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        hourCycle: 'h23',
+      });
+      const parts = formatter.formatToParts(new Date());
+      const p = Object.fromEntries(parts.map(pt => [pt.type, pt.value]));
+      return `${p.year}-${p.month}-${p.day}T${p.hour}:00`;
+    } catch (e) {
+      return "";
+    }
+  }, [forecast?.timezone, now]);
+
+  const getDisplayDate = React.useCallback((timeString: string) => {
+    const localDate = parseISO(timeString);
+    if (timeDisplayMode === 'browser') {
+      return new Date(localDate.getTime() + timeDiffMs);
+    }
+    return localDate;
+  }, [timeDisplayMode, timeDiffMs]);
 
   if (isLoading || !forecast) {
     return (
@@ -75,7 +115,22 @@ export function HourlyForecast() {
     <div className="w-full h-full rounded-3xl bg-background/20 backdrop-blur-xl border border-border/10 p-5 flex flex-col shadow-2xl relative overflow-hidden">
       <div className="flex items-center justify-between mb-2 z-10">
         <h3 className="text-lg font-medium tracking-tight">Hourly Forecast</h3>
-        <span className="text-sm text-muted-foreground">Next 24 Hours</span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center bg-foreground/5 rounded-full p-0.5 border border-border/10">
+            <button 
+              onClick={() => setTimeDisplayMode('location')}
+              className={`px-3 py-1 text-[11px] font-semibold rounded-full transition-all ${timeDisplayMode === 'location' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+            >
+              Local Time
+            </button>
+            <button 
+              onClick={() => setTimeDisplayMode('browser')}
+              className={`px-3 py-1 text-[11px] font-semibold rounded-full transition-all ${timeDisplayMode === 'browser' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+            >
+              My Time
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="flex relative z-10 flex-1 pb-4">
@@ -176,7 +231,7 @@ export function HourlyForecast() {
                 }}
               >
                 <span className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">
-                  {format(parseISO(hours[hoveredIndex].time), 'h a')}
+                  {format(getDisplayDate(hours[hoveredIndex].time), 'h a')}
                 </span>
                 <span className="text-sm font-bold text-slate-100 flex items-center gap-1">
                   {Math.round(hours[hoveredIndex].temperature)}°
@@ -189,8 +244,10 @@ export function HourlyForecast() {
           </div>
 
           {hours.map((hour: HourlyForecastData, index: number) => {
-            const date = parseISO(hour.time);
-            const isNow = isSameHour(date, now);
+            const displayDate = getDisplayDate(hour.time);
+            // Format the API time consistently to YYYY-MM-DDTHH:00 to avoid :00 seconds serialization mismatches
+            const hourNormalized = format(parseISO(hour.time), "yyyy-MM-dd'T'HH:00");
+            const isNow = hourNormalized === currentHourInLocation;
             
             return (
               <motion.div
@@ -202,7 +259,7 @@ export function HourlyForecast() {
                 style={{ minWidth: colWidth, width: colWidth }}
               >
                 <span className={`text-[11px] font-medium mb-1 ${isNow ? 'text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]' : 'text-foreground/80'}`}>
-                  {isNow ? 'Now' : format(date, 'h a')}
+                  {isNow ? 'Now' : format(displayDate, 'h a')}
                 </span>
                 
                 <div className="flex flex-col items-center gap-0.5 mb-1">
@@ -227,7 +284,7 @@ export function HourlyForecast() {
                 <div className="h-[140px] w-full" />
 
                 <span className={`text-[10px] font-medium text-muted-foreground mt-2 ${isNow ? 'text-blue-400/70' : ''}`}>
-                  {isNow ? 'Now' : format(date, 'h a')}
+                  {isNow ? 'Now' : format(displayDate, 'h a')}
                 </span>
               </motion.div>
             );
