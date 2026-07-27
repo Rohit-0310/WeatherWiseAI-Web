@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { TopNav } from "@/shared/components/layout/TopNav";
 import { Sidebar } from "@/shared/components/layout/Sidebar";
+import { MobileNav } from "@/shared/components/layout/MobileNav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,9 +24,10 @@ export default function RootLayout({
         <Providers>
           <div className="flex min-h-screen">
             <Sidebar />
-            <div className="flex-1 flex flex-col lg:ml-[80px] min-w-0">
+            <MobileNav />
+            <div className="flex-1 flex flex-col md:ml-[80px] min-w-0">
               <TopNav />
-              <main className="flex-1 flex flex-col pt-4">
+              <main className="flex-1 flex flex-col pt-4 pb-24 md:pb-4">
                 {children}
               </main>
             </div>
