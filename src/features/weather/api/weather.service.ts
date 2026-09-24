@@ -39,4 +39,9 @@ export const WeatherService = {
     });
     return response.data.data;
   },
+
+  getAiSummary: async (request: any) => {
+    const response = await apiClient.post('/AiSummary', request);
+    return response.data;
+  },
 };
