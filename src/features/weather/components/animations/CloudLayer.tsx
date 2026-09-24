@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/purity */
 'use client';
 
 import * as React from 'react';
@@ -9,22 +10,20 @@ interface Props {
 }
 
 export function CloudLayer({ code, windSpeed }: Props) {
-  // Show for Partly Cloudy (2), Overcast/Cloudy (3), Fog (45,48), Rain, Snow, etc.
-  // Actually, clouds are everywhere except Clear (0, 1)
-  if (code === 0 || code === 1) return null;
-
   const isOvercast = code === 3 || code >= 45;
   const numClouds = isOvercast ? 6 : 3;
-  const baseSpeed = windSpeed > 50 ? 5 : windSpeed > 25 ? 10 : 25; // Lower is faster in framer-motion duration
+  const baseSpeed = windSpeed > 50 ? 5 : windSpeed > 25 ? 10 : 25;
 
-  const clouds = Array.from({ length: numClouds }).map((_, i) => ({
+  const clouds = React.useMemo(() => Array.from({ length: numClouds }).map((_, i) => ({
     id: i,
-    y: Math.random() * 40, // Top 40% of screen
+    y: Math.random() * 40,
     scale: Math.random() * 0.5 + 0.5,
     opacity: isOvercast ? (Math.random() * 0.3 + 0.4) : (Math.random() * 0.2 + 0.1),
     duration: baseSpeed + (Math.random() * 10),
-    delay: -Math.random() * 20, // Start already moving
-  }));
+    delay: -Math.random() * 20,
+  })), [numClouds, isOvercast, baseSpeed]);
+
+  if (code === 0 || code === 1) return null;
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">

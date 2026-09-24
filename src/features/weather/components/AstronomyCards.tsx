@@ -4,10 +4,13 @@ import * as React from 'react';
 import { motion } from 'framer-motion';
 import { format, parseISO } from 'date-fns';
 import { useAstronomy } from '../hooks/use-astronomy';
+import { useAppStore } from '@/shared/stores/app.store';
 import { Moon, Sunrise, Sunset } from 'lucide-react';
 
 export function AstronomyCards() {
   const { data: astronomy, isLoading } = useAstronomy();
+  const { preferences } = useAppStore();
+  const timeFormatString = preferences.timeFormat === '24h' ? 'HH:mm' : 'hh:mm a';
 
   if (isLoading || !astronomy) {
     return (
@@ -111,11 +114,11 @@ export function AstronomyCards() {
           <div className="flex justify-between w-full pt-4">
             <div className="flex flex-col">
               <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-0.5">Sunrise</span>
-              <span className="text-sm font-semibold text-foreground/90">{format(sunrise, 'hh:mm a')}</span>
+              <span className="text-sm font-semibold text-foreground/90">{format(sunrise, timeFormatString)}</span>
             </div>
             <div className="flex flex-col text-right">
               <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-0.5">Sunset</span>
-              <span className="text-sm font-semibold text-foreground/90">{format(sunset, 'hh:mm a')}</span>
+              <span className="text-sm font-semibold text-foreground/90">{format(sunset, timeFormatString)}</span>
             </div>
           </div>
         </div>
@@ -140,11 +143,11 @@ export function AstronomyCards() {
             <div className="flex gap-4 text-xs">
               <div className="flex flex-col">
                 <span className="text-muted-foreground">Moonrise</span>
-                <span className="font-semibold text-foreground/80">{moonRise ? format(moonRise, 'hh:mm a') : '--:--'}</span>
+                <span className="font-semibold text-foreground/80">{moonRise ? format(moonRise, timeFormatString) : '--:--'}</span>
               </div>
               <div className="flex flex-col">
                 <span className="text-muted-foreground">Moonset</span>
-                <span className="font-semibold text-foreground/80">{moonSet ? format(moonSet, 'hh:mm a') : '--:--'}</span>
+                <span className="font-semibold text-foreground/80">{moonSet ? format(moonSet, timeFormatString) : '--:--'}</span>
               </div>
             </div>
           </div>
