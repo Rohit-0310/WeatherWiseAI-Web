@@ -1,29 +1,7 @@
-# Deployment
+# Frontend deployment
 
-## Environment Variables
-The application requires specific environment variables to function in production.
-- `NEXT_PUBLIC_WEATHER_API_URL`: The base URL for the WeatherWiseAI-API.
-- `NEXT_PUBLIC_AI_API_KEY`: API key for AI features (must be kept secure; only expose `NEXT_PUBLIC_` variables if they are safe for the client).
+A Next.js production artifact is built with `npm ci` and `npm run build` and served with `npm start`. Use Node.js 20.9 or newer and give the build access to Google Fonts for Inter. No hosted environment or deployment workflow is verified by this repository.
 
-Ensure these are configured securely in your deployment platform's dashboard.
+The current browser client targets `https://localhost:7008/api/v1`. In a hosted frontend, that address would resolve on the visitor's device. An environment variable cannot change it in this revision. An agreed frontend base URL and matching API CORS policy are required before public deployment. Verify HTTPS, browser access, forecast and AI error paths and caching on the deployed origin. Keep Gemini credentials on the backend. [Integration constraints](API_INTEGRATION.md)
 
-## Production Build
-To create a production-ready build locally:
-```bash
-npm run build
-```
-This generates the optimized application in the `.next` directory. Test it locally using `npm run start`.
-
-## Optimization Strategies
-- **Image Optimization**: Use Next.js `<Image />` component for all assets to ensure WebP format, responsive sizing, and lazy loading.
-- **Bundle Size**: React Server Components (RSC) drastically reduce client-side JavaScript. Keep heavy libraries server-side where possible.
-- **Caching**: Leverage Next.js route caching and TanStack Query data caching to minimize unnecessary API calls.
-
-## Deployment Platforms
-WeatherWiseAI-Web is designed for edge-ready platforms that fully support Next.js App Router features.
-
-### Recommended: Vercel
-1. Push the repository to GitHub.
-2. Import the project in the Vercel Dashboard.
-3. Configure Environment Variables in the project settings.
-4. Deploy. Vercel automatically configures CI/CD and edge functions for Next.js.
+A managed Next.js host or a Node.js service is a candidate once the build and connectivity gates pass. See [draft release notes](RELEASE_NOTES_V1.md).
