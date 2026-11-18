@@ -3,7 +3,7 @@
 WeatherWiseAI-Web aims for a premium, dynamic, and immersive user interface.
 
 ## Typography
-- **Primary Font**: `Inter` or `Outfit` (via Google Fonts). Clean, modern, and highly legible for data-heavy interfaces.
+- **Primary font**: Inter, loaded by the root layout through next/font. Spacing and component notes below describe design guidance.
 - **Hierarchy**:
   - `h1`: 3rem (48px), Bold - Main temperatures / Hero titles.
   - `h2`: 2rem (32px), SemiBold - Section headers.

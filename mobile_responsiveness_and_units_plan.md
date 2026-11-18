@@ -1,5 +1,9 @@
+# Historical mobile navigation and units plan
+
+The frontend now includes mobile bottom navigation and explicit temperature units in forecast panels. This file retains the original proposal. See the [development guide](docs/DEVELOPMENT_GUIDE.md) for current verification.
+
 ## Goal Description
-The current UI hides critical navigation and settings elements on mobile devices (Sidebar and Theme Toggle). Furthermore, the bottom weather cards (Hourly and Weekly forecasts) do not explicitly display the selected temperature unit (e.g., °C or °F), leading to confusion when the user changes preferences. This plan aims to introduce a mobile-friendly bottom navigation bar and update all temperature displays to explicitly show the selected unit.
+The current UI hides critical navigation and settings elements on mobile devices (Sidebar and Theme Toggle). Furthermore, the bottom weather cards (Hourly and Weekly forecasts) do not explicitly display the selected temperature unit (e.g., ï¿½C or ï¿½F), leading to confusion when the user changes preferences. This plan aims to introduce a mobile-friendly bottom navigation bar and update all temperature displays to explicitly show the selected unit.
 
 ## User Review Required
 - **Mobile Navigation Design**: I propose adding a sleek, floating bottom navigation bar exclusively for mobile devices. This bar will house the Home, AI Summary, Settings, and Theme Toggle buttons, ensuring they are always accessible on smaller screens without cluttering the TopNav. Do you agree with this design?
@@ -20,7 +24,7 @@ The current UI hides critical navigation and settings elements on mobile devices
 ### 3. Explicit Temperature Units
 - **[MODIFY] src/features/weather/components/HourlyForecast.tsx**: 
   - Read \preferences.temperature\ from \useAppStore\.
-  - Update all temperature displays (e.g., \Math.round(temperature)°\) to append \C\ or \F\ dynamically (e.g., \24°C\).
+  - Update all temperature displays (e.g., \Math.round(temperature)ï¿½\) to append \C\ or \F\ dynamically (e.g., \24ï¿½C\).
 - **[MODIFY] src/features/weather/components/WeeklyForecast.tsx**: 
   - Read \preferences.temperature\ from \useAppStore\.
   - Update min and max temperature displays to append the explicit unit letter.
@@ -34,4 +38,4 @@ pm run lint\ to ensure no syntax or React purity errors are introduced.
 1. Open the app in a mobile viewport simulator.
 2. Verify that a bottom navigation bar appears, providing access to Home, AI Summary, Settings, and Theme Toggle.
 3. Open the Settings modal and change the temperature unit.
-4. Verify that the bottom cards (Hourly and Weekly) explicitly display the new unit letter (e.g., °C -> °F) alongside the updated numeric values.
+4. Verify that the bottom cards (Hourly and Weekly) explicitly display the new unit letter (e.g., ï¿½C -> ï¿½F) alongside the updated numeric values.

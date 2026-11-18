@@ -1,51 +1,15 @@
-# Development Guide
+# Development guide
 
-## Folder Conventions
-We strictly adhere to a **Feature-first architecture**.
+Use the [local setup](../README.md#run-locally). Keep route composition in `src/app`, domain UI and service calls in `src/features`, cross-feature code in `src/shared`, and reusable controls in `src/components/ui`. Inspect the current backend contract before adding a request or changing a client type. [Coding standards](CODING_STANDARDS.md)
 
-```
-src/
-├── app/                  # Next.js App Router (Routing only)
-├── features/             # Business logic domains
-│   └── feature-name/
-│       ├── components/   # UI for this feature only
-│       ├── hooks/        # Feature specific hooks
-│       ├── services/     # API calls for this feature
-│       ├── store/        # Zustand state for this feature
-│       └── types/        # TS interfaces
-└── shared/               # Global/shared code
-    ├── components/       # shadcn/ui and basic UI elements
-    ├── hooks/            # e.g., useTheme
-    ├── lib/              # Utility functions
-    ├── api/              # Axios configuration
-    └── types/            # Global types
-```
+## Verification
 
-## How to add pages
-1. Navigate to `src/app/`.
-2. Create a new folder for the route (e.g., `src/app/settings/`).
-3. Create `page.tsx`. Keep this file lean; it should primarily import a composition of Feature components.
+Use the checked-in npm lockfile. Run `npm run lint`, `npm exec -- tsc --noEmit` and `npm run build`. See [known failures](RELEASE_NOTES_V1.md). There is no automated test suite. For manual checks, run both projects and exercise:
 
-## How to add features
-1. Identify if the new functionality is an independent domain (e.g., `alerts`).
-2. Create a new folder `src/features/alerts`.
-3. Scaffold the necessary subfolders (`components`, `hooks`, `services`).
-4. Keep the feature encapsulated. Do not import from one feature into another unless absolutely necessary.
+- Dashboard loading and provider failures, city search and geolocation permission, hourly/daily forecast and astronomy.
+- Desktop and mobile navigation, unit changes and persisted settings across reloads.
+- Light and dark mode, keyboard focus, contrast and reduced-motion preferences.
+- AI generation, error and regeneration with a backend key. Change location during a request and check which location the result describes.
+- Browser Network and Console for TLS, CORS and response-shape errors. Use the backend Swagger UI to isolate provider or contract problems.
 
-## How to add components
-- **Shared UI**: If it's a generic button, input, or layout wrapper, place it in `src/shared/components/`.
-- **Feature UI**: If it's specific (e.g., `WeatherRadarMap`), place it in `src/features/[feature-name]/components/`.
-
-## How to add hooks
-- Follow the same rule as components. Shared hooks go to `src/shared/hooks/`, domain-specific hooks go to the feature folder.
-
-## How to add services
-1. Define the TypeScript interfaces for the API response in `features/[feature-name]/types/`.
-2. Create Axios call functions in `features/[feature-name]/services/api.ts`.
-3. Create TanStack Query hooks in `features/[feature-name]/hooks/` to consume the API functions.
-
-## Naming Conventions
-- **Files/Folders**: `kebab-case` (e.g., `weather-card.tsx`, `use-weather.ts`).
-- **Components**: `PascalCase` (e.g., `WeatherCard`).
-- **Functions/Hooks**: `camelCase` (e.g., `fetchWeatherData`, `useWeather`).
-- **Types/Interfaces**: `PascalCase` (e.g., `WeatherData`). Avoid prefixing with `I` or `T`.
+Check only implemented settings in the visible UI and record what was actually tested. Several settings are stored while display coverage varies by component.

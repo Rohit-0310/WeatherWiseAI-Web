@@ -1,77 +1,41 @@
-# WeatherWiseAI-Web
+# WeatherWiseAI Web
 
-## Project Overview
-WeatherWiseAI-Web is an AI-first weather application designed with a feature-first architecture. It provides an intuitive, responsive, and dynamic user interface that adapts to the current weather conditions, time of day, sunrise, and sunset, offering a premium and highly interactive experience.
+WeatherWiseAI Web is a Next.js dashboard for exploring weather, forecasts and on-demand AI recommendations. It uses the separate [WeatherWiseAI API](https://github.com/Rohit-0310/WeatherWiseAI-API).
 
-## Features
-- **AI-first Weather Insights**: Leverages WeatherWiseAI-API to deliver smart weather forecasts and insights.
-- **Dynamic Theming System**:
-  - Light and Dark modes.
-  - Auto mode adapting to weather condition, time of day, sunrise, and sunset.
-  - Custom themes for conditions: Sunny, Cloudy, Rain, Thunderstorm, Snow, Fog, Wind.
-- **Advanced Animations**: Weather-specific micro-interactions and background effects (e.g., rain, snow, lightning, cloud movement) using Framer Motion.
-- **Feature-first Architecture**: Scalable and maintainable codebase organization.
+| Screen | Implemented features |
+| --- | --- |
+| Dashboard (`/`) | Current conditions, weather metrics, hourly and daily forecasts, solar and lunar cards, condition-based animation |
+| AI Summary (`/ai-summary`) | Generate or regenerate a weather summary, clothing recommendation and activity suggestion through the backend |
+| Shared navigation | City search, device location lookup, desktop sidebar, mobile bottom navigation, theme toggle and saved settings |
 
-## Technology Stack
-- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
-- **Library**: [React 19](https://react.dev/)
-- **Language**: TypeScript
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) & [shadcn/ui](https://ui.shadcn.com/)
-- **Data Fetching & Caching**: [TanStack Query](https://tanstack.com/query/latest) & Axios
-- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/)
-- **Forms & Validation**: React Hook Form & Zod
-- **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **Icons**: [Lucide Icons](https://lucide.dev/)
+The checked-in stack is Next.js 16.2.9 App Router, React 19.2.4, TypeScript, Tailwind CSS 4, shadcn/ui with Base UI, Lucide, Framer Motion, next-themes, Axios, TanStack Query and Zustand. [Architecture](docs/ARCHITECTURE.md)
 
-## Folder Structure
-```
-.
-├── docs/                 # Extensive project documentation
-├── public/               # Static assets
-└── src/
-    ├── app/              # Next.js App Router (Pages & Layouts)
-    ├── features/         # Feature-first modules (Components, Hooks, Store, etc.)
-    └── shared/           # Shared components, utilities, and assets
+## Run locally
+
+Use Node.js 20.9 or newer as required by Next.js and npm. Start the backend with its HTTPS launch profile and trust its development certificate. The API serves Swagger at `https://localhost:7008/`.
+
+```sh
+npm ci
+npm run dev
 ```
 
-## Quick Start
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd weatherwise-web
-   ```
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-3. **Run the development server:**
-   ```bash
-   npm run dev
-   ```
-4. **Open the app:** Visit `http://localhost:3000`
+Open **http://localhost:3000**. The frontend uses **https://localhost:7008/api/v1** directly from the browser. This URL is fixed in `src/shared/api/axios.ts`. The backend permits the exact development origin above. Use `localhost`, as `127.0.0.1` is a different origin.
 
-## Environment Variables
-Create a `.env.local` file in the root directory and add the following variables:
-```env
-NEXT_PUBLIC_WEATHER_API_URL=your_api_url_here
-NEXT_PUBLIC_AI_API_KEY=your_ai_api_key_here
+### Environment configuration
+
+No application environment variable is read for the API client. Setting `NEXT_PUBLIC_WEATHER_API_URL` does not override it. Gemini configuration belongs to the backend only. See [the integration guide](docs/API_INTEGRATION.md).
+
+## Build and test
+
+```sh
+npm run lint
+npm exec -- tsc --noEmit
+npm run build
+npm start
 ```
 
-## Project Scripts
-- `npm run dev`: Starts the development server.
-- `npm run build`: Builds the app for production.
-- `npm run start`: Runs the built app in production mode.
-- `npm run lint`: Runs ESLint to catch code issues.
+The build fetches Inter via `next/font/google` and needs font access in the build environment. The repository has no automated test script or suite. Use the [manual verification checklist](docs/DEVELOPMENT_GUIDE.md) and consult the [draft release notes](docs/RELEASE_NOTES_V1.md) for current failures.
 
-## Documentation Index
-Comprehensive guides are located in the [`docs/`](./docs) folder:
-- [Architecture Guide](./docs/ARCHITECTURE.md)
-- [Development Guide](./docs/DEVELOPMENT_GUIDE.md)
-- [Design System](./docs/DESIGN_SYSTEM.md)
-- [Theme System](./docs/THEME_SYSTEM.md)
-- [Animations](./docs/ANIMATIONS.md)
-- [API Integration](./docs/API_INTEGRATION.md)
-- [Decisions & Rationales](./docs/DECISIONS.md)
-- [Deployment](./docs/DEPLOYMENT.md)
-- [Roadmap](./docs/ROADMAP.md)
-- [Changelog](./docs/CHANGELOG.md)
+For hosted integration, the API URL and backend CORS constraints must be resolved first. [Deployment](docs/DEPLOYMENT.md)
+
+See the [documentation index](docs/README.md), [contribution guide](CONTRIBUTING.md), and [security policy](SECURITY.md). The project uses the [MIT License](LICENSE).
