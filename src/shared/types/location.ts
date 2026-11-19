@@ -12,5 +12,5 @@ export interface ApiResponse<T> {
   data: T;
   success: boolean;
   errors: string[];
-  meta: Record<string, unknown>;
+  meta: Record<string, unknown> | null;
 }

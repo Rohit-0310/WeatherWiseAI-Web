@@ -1,5 +1,11 @@
 # Draft Web release notes for v1.0.0
 
+**Status: unreleased.** The remediation branch builds with local Inter and a configurable browser API URL. European AQI bands, nullable readings, explicit AI units, forecast retries and selection-scoped AI results are implemented.
+
+On Node 24, clean installation, ESLint, TypeScript, the production build, AQI boundary checks and ten Playwright desktop/mobile checks passed. Both full and production-only npm audits reported zero findings. Re-run these checks against the lockfile before release. The browser suite uses synthetic API responses. A separate production-browser run exercised city search, daily details, unit changes and AI generation against the actual companion API with local provider fixtures. The dev server returned HTTP 200 on both routes. Hosting, real provider access and the private vulnerability reporting channel still need verification.
+
+## Historical audit evidence
+
 **Status: unreleased and not ready for stable release.** Source baseline `5b32876`. This audit updated documentation only.
 
 ## Verified in source

@@ -1,14 +1,13 @@
 'use client';
 
 import * as React from 'react';
-import { Check, ChevronsUpDown, Loader2, MapPin, Search } from 'lucide-react';
+import { Check, Loader2, MapPin, Search } from 'lucide-react';
 import { useLocationSearch } from '../hooks/use-location';
 import { useDebounce } from '@/shared/hooks/use-debounce';
 import { useAppStore } from '@/shared/stores/app.store';
 import { Location } from '@/shared/types/location';
 import { LocationService } from '../api/location.service';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { LocateFixed } from 'lucide-react';
 
 export function LocationSearch() {
@@ -51,7 +50,8 @@ export function LocationSearch() {
             if (searchTerm.length > 0) setOpen(true);
           }}
         />
-        <button 
+        <button
+          aria-label="Use device location"
           className={cn(
             "ml-2 shrink-0 p-2 rounded-full hover:bg-background/20 transition-colors",
             isLocating && "animate-pulse text-primary"

@@ -1,5 +1,5 @@
 import { apiClient } from '@/shared/api/axios';
-import { CurrentWeather } from '@/shared/types/weather';
+import { CurrentWeather, HourlyForecastResponse, WeeklyForecastResponse, AstronomyResponse, AiSummaryRequest, AiSummaryResponse } from '@/shared/types/weather';
 import { ApiResponse } from '@/shared/types/location';
 
 export const WeatherService = {
@@ -14,7 +14,7 @@ export const WeatherService = {
   },
 
   getHourlyForecast: async (latitude: number, longitude: number, units: string) => {
-    const response = await apiClient.get<ApiResponse<any>>('/Weather/hourly', {
+    const response = await apiClient.get<ApiResponse<HourlyForecastResponse>>('/Weather/hourly', {
       params: { Latitude: latitude, Longitude: longitude, Units: units },
     });
     
@@ -24,7 +24,7 @@ export const WeatherService = {
   },
 
   getWeeklyForecast: async (latitude: number, longitude: number, units: string) => {
-    const response = await apiClient.get<ApiResponse<any>>('/Weather/forecast', {
+    const response = await apiClient.get<ApiResponse<WeeklyForecastResponse>>('/Weather/forecast', {
       params: { Latitude: latitude, Longitude: longitude, Units: units },
     });
     
@@ -33,15 +33,15 @@ export const WeatherService = {
     return data;
   },
 
-  getAstronomy: async (latitude: number, longitude: number) => {
-    const response = await apiClient.get<ApiResponse<any>>('/Weather/astronomy', {
-      params: { Latitude: latitude, Longitude: longitude },
+  getAstronomy: async (latitude: number, longitude: number, date?: string) => {
+    const response = await apiClient.get<ApiResponse<AstronomyResponse>>('/Weather/astronomy', {
+      params: { Latitude: latitude, Longitude: longitude, Date: date },
     });
     return response.data.data;
   },
 
-  getAiSummary: async (request: any) => {
-    const response = await apiClient.post('/AiSummary', request);
+  getAiSummary: async (request: AiSummaryRequest) => {
+    const response = await apiClient.post<AiSummaryResponse>('/AiSummary', request);
     return response.data;
   },
 };

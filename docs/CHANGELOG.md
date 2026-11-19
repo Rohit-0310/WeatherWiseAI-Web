@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Correct European AQI bands and missing measurements. Include weather units in suggestions, reset obsolete results, and provide forecast retry and detail controls. Bundle Inter locally, configure the API URL at build time, and add unit and browser checks.
+
 - Restore contributor workflows, request walkthroughs and the inventory of earlier documentation sections.
 
 - Document responsive navigation, weather and AI Summary behavior, API compatibility gaps and release blockers.

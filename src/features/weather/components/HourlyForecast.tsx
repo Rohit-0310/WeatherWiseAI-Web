@@ -20,32 +20,37 @@ const renderIcon = (code: string, className = "w-6 h-6") => {
 };
 
 export function HourlyForecast() {
-  const { data: forecast, isLoading } = useHourlyForecast();
+  const { data: forecast, isLoading, isError, refetch } = useHourlyForecast();
   const { preferences } = useAppStore();
   const tempUnit = preferences.temperature === 'Celsius' ? '°C' : '°F';
   const containerRef = React.useRef<HTMLDivElement>(null);
   
-  const [now] = React.useState(new Date());
+  const [now, setNow] = React.useState(() => new Date());
+  React.useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
   const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
   const [timeDisplayMode, setTimeDisplayMode] = React.useState<'location' | 'browser'>('location');
 
+  const timezone = forecast?.timezone;
   const timeDiffMs = React.useMemo(() => {
-    if (!forecast?.timezone) return 0;
+    if (!timezone) return 0;
     try {
       const browserNow = new Date();
-      const locationNowStr = browserNow.toLocaleString('en-US', { timeZone: forecast.timezone, hour12: false });
+      const locationNowStr = browserNow.toLocaleString('en-US', { timeZone: timezone, hour12: false });
       const locationNow = new Date(locationNowStr);
       return browserNow.getTime() - locationNow.getTime();
     } catch {
       return 0;
     }
-  }, [forecast?.timezone]);
+  }, [timezone]);
 
   const currentHourInLocation = React.useMemo(() => {
-    if (!forecast?.timezone) return "";
+    if (!timezone) return "";
     try {
       const formatter = new Intl.DateTimeFormat('en-US', {
-        timeZone: forecast.timezone,
+        timeZone: timezone,
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
@@ -58,7 +63,7 @@ export function HourlyForecast() {
     } catch {
       return "";
     }
-  }, [forecast?.timezone, now]);
+  }, [timezone, now]);
 
   const getDisplayDate = React.useCallback((timeString: string) => {
     const localDate = parseISO(timeString);
@@ -94,6 +99,9 @@ export function HourlyForecast() {
     
     return { pathString: pString, points: pts };
   }, [hours, minTemp, tempRange]);
+
+  if (isError && !forecast) return <p role="alert">Forecast unavailable. <button onClick={() => refetch()}>Retry</button></p>;
+  if (forecast && !forecast.hours.length) return <p>No forecast available.</p>;
 
   if (isLoading || !forecast) {
     return (

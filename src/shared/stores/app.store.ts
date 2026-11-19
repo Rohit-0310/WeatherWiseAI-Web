@@ -37,6 +37,7 @@ export const useAppStore = create<AppState>()(
       currentLocation: {
         id: 1261481,
         name: "New Delhi",
+        timezone: "Asia/Kolkata",
         region: "Delhi",
         country: "India",
         latitude: 28.6139,

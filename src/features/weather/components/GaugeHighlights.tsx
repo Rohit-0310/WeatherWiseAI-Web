@@ -1,19 +1,13 @@
 'use client';
 
+import { getAqiDetails } from '@/shared/utils/air-quality';
 import * as React from 'react';
 import { motion } from 'framer-motion';
 import { Wind, Droplets, Gauge as GaugeIcon, Eye, Cloud, Leaf } from 'lucide-react';
 import { useCurrentWeather } from '../hooks/use-weather';
 import { useAppStore } from '@/shared/stores/app.store';
 
-const getAqiDetails = (aqi: number) => {
-  if (aqi <= 50) return { label: 'Good', color: 'text-emerald-400' };
-  if (aqi <= 100) return { label: 'Moderate', color: 'text-yellow-400' };
-  if (aqi <= 150) return { label: 'Unhealthy (SG)', color: 'text-orange-400' };
-  if (aqi <= 200) return { label: 'Unhealthy', color: 'text-red-400' };
-  if (aqi <= 300) return { label: 'Very Unhealthy', color: 'text-purple-400' };
-  return { label: 'Hazardous', color: 'text-rose-600' };
-};
+
 
 const getWindDirection = (degree: number) => {
   const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
@@ -34,12 +28,12 @@ export function GaugeHighlights() {
   const visibilityUnit = weather.visibility > 1000 ? 'km' : 'm';
 
   const gauges = [
-    { label: 'Air Quality', value: weather.aqi.toString(), unit: aqiInfo.label, icon: Leaf, color: aqiInfo.color, percentage: Math.min((weather.aqi / 300) * 100, 100) },
+    { label: 'European AQI', value: weather.aqi?.toString() ?? 'N/A', unit: aqiInfo.label, icon: Leaf, color: aqiInfo.color, percentage: Math.min(weather.aqi ?? 0, 100) },
     { label: 'Humidity', value: `${weather.humidity}%`, unit: weather.humidity > 60 ? 'High' : 'Comfortable', icon: Droplets, color: 'text-blue-400', percentage: weather.humidity },
     { label: 'Wind', value: weather.windSpeed.toString(), unit: `${windUnit} ${getWindDirection(weather.windDirection)}`, icon: Wind, color: 'text-purple-400', percentage: Math.min((weather.windSpeed / 50) * 100, 100) },
     { label: 'Pressure', value: Math.round(weather.pressure).toString(), unit: 'hPa', icon: GaugeIcon, color: 'text-pink-400', percentage: Math.min(((weather.pressure - 950) / 100) * 100, 100) },
     { label: 'Visibility', value: visibilityVal.toString(), unit: visibilityUnit, icon: Eye, color: 'text-teal-400', percentage: Math.min((weather.visibility / 10000) * 100, 100) },
-    { label: 'Cloud Cover', value: `${weather.cloudCover}%`, unit: weather.cloudCover > 50 ? 'Overcast' : 'Clear', icon: Cloud, color: 'text-blue-300', percentage: weather.cloudCover },
+    { label: 'Cloud Cover', value: weather.cloudCover == null ? "N/A" : `${weather.cloudCover}%`, unit: weather.cloudCover == null ? "Unavailable" : weather.cloudCover > 50 ? 'Overcast' : 'Clear', icon: Cloud, color: 'text-blue-300', percentage: weather.cloudCover ?? 0 },
   ];
 
   return (
@@ -83,6 +77,7 @@ export function GaugeHighlights() {
           </motion.div>
         );
       })}
+      <small className="col-span-full text-muted-foreground">Air quality from <a href="https://open-meteo.com/">Open-Meteo</a> and <a href="https://atmosphere.copernicus.eu/">CAMS ENSEMBLE</a>.</small>
     </div>
   );
 }

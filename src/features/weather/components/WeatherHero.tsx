@@ -1,5 +1,6 @@
 'use client';
 
+import { getAqiDetails } from '@/shared/utils/air-quality';
 import * as React from 'react';
 import { motion } from 'framer-motion';
 import { Cloud, CloudLightning, CloudRain, Snowflake, Sun, MapPin, Droplets, Wind, Leaf, Sun as SunIcon, Eye } from 'lucide-react';
@@ -12,14 +13,7 @@ const getWindDirection = (degree: number) => {
   return directions[Math.round(degree / 45) % 8];
 };
 
-const getAqiDetails = (aqi: number) => {
-  if (aqi <= 50) return { label: 'Good', color: 'text-emerald-400', border: 'border-emerald-500/30' };
-  if (aqi <= 100) return { label: 'Moderate', color: 'text-yellow-400', border: 'border-yellow-500/30' };
-  if (aqi <= 150) return { label: 'Unhealthy for Sensitive Groups', color: 'text-orange-400', border: 'border-orange-500/30' };
-  if (aqi <= 200) return { label: 'Unhealthy', color: 'text-red-400', border: 'border-red-500/30' };
-  if (aqi <= 300) return { label: 'Very Unhealthy', color: 'text-purple-400', border: 'border-purple-500/30' };
-  return { label: 'Hazardous', color: 'text-rose-600', border: 'border-rose-600/30' };
-};
+
 
 const renderIcon = (code: string, className = "w-12 h-12") => {
   switch (code) {
@@ -125,7 +119,7 @@ export function WeatherHero() {
         transition={{ delay: 0.4 }}
         className="flex flex-wrap gap-4 w-full items-center mt-auto pb-4"
       >
-        <Pill icon={Leaf} label="AQI" value={weather.aqi} sub={getAqiDetails(weather.aqi).label} color={getAqiDetails(weather.aqi).color} />
+        <Pill icon={Leaf} label="European AQI" value={weather.aqi ?? "N/A"} sub={getAqiDetails(weather.aqi).label} color={getAqiDetails(weather.aqi).color} />
         <Pill icon={CloudRain} label="Rain" value={`${weather.precipitationChance}%`} color="text-blue-400" />
         <Pill icon={Wind} label="Wind" value={formatWindSpeed(weather.windSpeed, units, preferences)} sub={getWindDirection(weather.windDirection)} color="text-purple-400" />
         <Pill icon={Droplets} label="Humidity" value={`${weather.humidity}%`} color="text-blue-300" />

@@ -18,10 +18,10 @@ export interface CurrentWeather {
   uvIndex: number;
   windDirection: number;
   isDay: number;
-  aqi: number;
+  aqi: number | null;
   maxTemperature: number;
   minTemperature: number;
-  cloudCover: number;
+  cloudCover?: number;
   precipitationChance: number;
   sunrise?: string;
   sunset?: string;
@@ -32,7 +32,7 @@ export interface HourlyForecastData {
   temperature: number;
   windSpeed: number;
   condition: WeatherCondition;
-  precipitationChance?: number; // Mocked
+  precipitationChance: number;
 }
 
 export interface WeeklyForecastData {
@@ -58,4 +58,27 @@ export interface WeeklyForecastResponse {
   timezone: string;
   units: string;
   days: WeeklyForecastData[];
+}
+
+export interface AstronomyResponse {
+  dayLength: string;
+  sunrise: string;
+  sunset: string;
+  moonRise: string | null;
+  moonSet: string | null;
+  moonPhaseName: string;
+  moonIllumination: number;
+}
+export interface AiSummaryRequest {
+  location: string;
+  temperature: string;
+  condition: string;
+  humidity: string;
+  wind: string;
+  uvIndex: string;
+}
+export interface AiSummaryResponse {
+  summary: string;
+  clothing: string;
+  activity: string;
 }
