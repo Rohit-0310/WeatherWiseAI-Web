@@ -22,3 +22,7 @@ On Node.js 24.16.0 and npm 11.17.0 using the local installed dependencies:
 - No automated test script or suite exists. Browser integration, live AI and deployment were not verified in this audit.
 
 Fix the build and lint/type checks, make the API base URL and CORS deployable, clarify DTOs and errors, and verify location changes, timezones, units, accessibility and browser integration. Add CI and automated tests before release. [Integration gaps](API_INTEGRATION.md) · [Roadmap](ROADMAP.md)
+
+## Documentation recheck on 2026-11-19
+
+ESLint reported seven errors and four warnings. The installed TypeScript compiler reported nine errors across AI motion variants, hourly forecast typing and the default location. The production build failed to retrieve Inter from Google Fonts, including on a second attempt with network access requested. No automated test script is defined. Browser integration, live Gemini and deployment were not exercised in this recheck.

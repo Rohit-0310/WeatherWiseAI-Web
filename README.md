@@ -39,3 +39,7 @@ The build fetches Inter via `next/font/google` and needs font access in the buil
 For hosted integration, the API URL and backend CORS constraints must be resolved first. [Deployment](docs/DEPLOYMENT.md)
 
 See the [documentation index](docs/README.md), [contribution guide](CONTRIBUTING.md), and [security policy](SECURITY.md). The project uses the [MIT License](LICENSE).
+
+## Follow a dashboard interaction
+
+The [hourly forecast walkthrough](docs/ARCHITECTURE.md#from-city-selection-to-an-hourly-forecast) traces a city selection from persisted state to the rendered panel. The [AI walkthrough](docs/ARCHITECTURE.md#from-generate-to-three-suggestion-cards) follows a user-triggered POST and its error path. For contributor workflows see the [development guide](docs/DEVELOPMENT_GUIDE.md) and [roadmap](docs/ROADMAP.md).
