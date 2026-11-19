@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Restore contributor workflows, request walkthroughs and the inventory of earlier documentation sections.
+
 - Document responsive navigation, weather and AI Summary behavior, API compatibility gaps and release blockers.
 - Add contributor and security guidance, coding standards and draft v1.0.0 release notes.
 

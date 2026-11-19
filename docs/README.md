@@ -5,3 +5,5 @@
 - [Design system](DESIGN_SYSTEM.md), [theming](THEME_SYSTEM.md) and [animations](ANIMATIONS.md)
 - [Deployment](DEPLOYMENT.md), [roadmap](ROADMAP.md), [changelog](CHANGELOG.md) and [draft release notes](RELEASE_NOTES_V1.md)
 - [Contributing](../CONTRIBUTING.md) and [security](../SECURITY.md)
+
+For the disposition of earlier sections, see the [documentation audit](DOCUMENTATION_AUDIT.md).

@@ -22,3 +22,21 @@ Default stale time is five minutes, with two retries and no window-focus refetch
 - The frontend current-weather type requires cloud cover and permits optional sunrise and sunset fields. The backend current response omits all three. Astronomy has its own endpoint. The frontend also models envelope `meta` as an object, while the backend commonly returns null.
 - Reverse geocoding uses a GMT placeholder. Several display paths parse offset-free timestamps using JavaScript dates. Verify local-time behavior across browser and forecast timezones before making accuracy claims.
 - Browser URL and CORS origin are fixed. Hosted environments need an agreed configuration strategy.
+
+## Compare requests in browser developer tools
+
+With a city selected, inspect `GET /api/v1/Weather/hourly?Latitude=28.61&Longitude=77.21&Units=Metric`. A successful response has an object at `data` with coordinates, timezone, units and an array named `hours`. WeatherService extracts that object before the hook hands it to the component.
+
+Generate on the AI Summary screen sends a snapshot like the following synthetic example:
+
+```json
+{"location":"New Delhi","temperature":"25","condition":"Rain","humidity":"80%","wind":"12","uvIndex":"2"}
+```
+
+A successful POST returns the following shape, with text generated for the supplied snapshot:
+
+```json
+{"summary":"Rain is likely.","clothing":"Bring a raincoat.","activity":"Choose an indoor activity."}
+```
+
+An adapter failure produces a 400 with `error.message`; a model-binding failure can produce a 400 with `errors` in an envelope. The page displays its own failure message. A network or TLS failure may provide no HTTP body. Check the Network panel before attributing a failure to Gemini.
