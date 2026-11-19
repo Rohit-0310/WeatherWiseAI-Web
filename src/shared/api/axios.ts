@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const apiClient = axios.create({
-  baseURL: 'https://localhost:7008/api/v1',
+  baseURL: process.env.NEXT_PUBLIC_WEATHER_API_URL || 'https://localhost:7008/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },

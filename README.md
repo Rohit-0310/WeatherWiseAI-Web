@@ -8,22 +8,22 @@ WeatherWiseAI Web is a Next.js dashboard for exploring weather, forecasts and on
 | AI Summary (`/ai-summary`) | Generate or regenerate a weather summary, clothing recommendation and activity suggestion through the backend |
 | Shared navigation | City search, device location lookup, desktop sidebar, mobile bottom navigation, theme toggle and saved settings |
 
-The checked-in stack is Next.js 16.2.9 App Router, React 19.2.4, TypeScript, Tailwind CSS 4, shadcn/ui with Base UI, Lucide, Framer Motion, next-themes, Axios, TanStack Query and Zustand. [Architecture](docs/ARCHITECTURE.md)
+The checked-in stack is Next.js 16 App Router, React 19, TypeScript, Tailwind CSS 4, shadcn/ui with Base UI, Lucide, Framer Motion, next-themes, Axios, TanStack Query and Zustand. [Architecture](docs/ARCHITECTURE.md)
 
 ## Run locally
 
-Use Node.js 20.9 or newer as required by Next.js and npm. Start the backend with its HTTPS launch profile and trust its development certificate. The API serves Swagger at `https://localhost:7008/`.
+Use Node.js 24 and npm. Start the companion API with its HTTPS launch profile and trust its development certificate.
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Open **http://localhost:3000**. The frontend uses **https://localhost:7008/api/v1** directly from the browser. This URL is fixed in `src/shared/api/axios.ts`. The backend permits the exact development origin above. Use `localhost`, as `127.0.0.1` is a different origin.
+Open **http://localhost:3000**. The default API base is **https://localhost:7008/api/v1** and the API permits this frontend origin in Development.
 
 ### Environment configuration
 
-No application environment variable is read for the API client. Setting `NEXT_PUBLIC_WEATHER_API_URL` does not override it. Gemini configuration belongs to the backend only. See [the integration guide](docs/API_INTEGRATION.md).
+Set `NEXT_PUBLIC_WEATHER_API_URL` at build time to override the API base URL, including /api/v1. Set the corresponding origin in the backend CORS allowlist. Gemini credentials belong exclusively to the backend.
 
 ## Build and test
 
@@ -34,9 +34,9 @@ npm run build
 npm start
 ```
 
-The build fetches Inter via `next/font/google` and needs font access in the build environment. The repository has no automated test script or suite. Use the [manual verification checklist](docs/DEVELOPMENT_GUIDE.md) and consult the [draft release notes](docs/RELEASE_NOTES_V1.md) for current failures.
+Inter is bundled locally. Run `npm test` for AQI boundary checks. After a production build, install Chromium with `npx playwright install chromium` and run `npm run test:browser` for desktop and mobile browser checks.
 
-For hosted integration, the API URL and backend CORS constraints must be resolved first. [Deployment](docs/DEPLOYMENT.md)
+Hosting and live-provider verification remain pending. [Deployment](docs/DEPLOYMENT.md)
 
 See the [documentation index](docs/README.md), [contribution guide](CONTRIBUTING.md), and [security policy](SECURITY.md). The project uses the [MIT License](LICENSE).
 

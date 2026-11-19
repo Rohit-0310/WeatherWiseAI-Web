@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
+import type { Variants } from 'framer-motion';
+import type { AiSummaryResponse } from '@/shared/types/weather';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, BrainCircuit, Loader2, ThermometerSun, Shirt, Navigation, RefreshCw } from 'lucide-react';
 import { useCurrentWeather } from '@/features/weather/hooks/use-weather';
@@ -15,15 +17,21 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30, filter: 'blur(10px)' },
   show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { type: 'spring', stiffness: 100, damping: 15 } }
 };
 
 export default function AISummaryPage() {
   const { currentLocation } = useAppStore();
-  const { data: weather, isLoading: isWeatherLoading } = useCurrentWeather();
-  const [summaryData, setSummaryData] = useState<any>(null);
+  const units = useAppStore(state => state.units);
+  return <SuggestionForm key={JSON.stringify([currentLocation, units])} />;
+}
+
+function SuggestionForm() {
+  const { currentLocation, units } = useAppStore();
+  const { data: weather, isLoading: isWeatherLoading, refetch } = useCurrentWeather();
+  const [summaryData, setSummaryData] = useState<AiSummaryResponse | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,10 +45,10 @@ export default function AISummaryPage() {
     try {
       const request = {
         location: currentLocation.name,
-        temperature: `${weather.temperature}`,
+        temperature: `${weather.temperature} ${units === "Metric" ? "\u00b0C" : "\u00b0F"}`,
         condition: weather.condition.description,
         humidity: `${weather.humidity}%`,
-        wind: `${weather.windSpeed}`,
+        wind: `${weather.windSpeed} ${units === "Metric" ? "km/h" : "mph"}`,
         uvIndex: `${weather.uvIndex}`
       };
       
@@ -101,6 +109,8 @@ export default function AISummaryPage() {
                 <div className="flex items-center gap-3 text-muted-foreground bg-background/40 backdrop-blur-lg px-6 py-3 rounded-full border border-border/20">
                   <Loader2 className="w-5 h-5 animate-spin" /> Fetching real-time weather...
                 </div>
+              ) : currentLocation && !weather ? (
+                <button onClick={() => refetch()}>Weather unavailable. Retry weather</button>
               ) : !currentLocation ? (
                 <div className="px-6 py-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400">
                   Please select a location first to generate a summary.

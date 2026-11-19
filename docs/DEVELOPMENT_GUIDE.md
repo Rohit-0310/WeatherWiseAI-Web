@@ -4,7 +4,7 @@ Use the [local setup](../README.md#run-locally). Keep route composition in `src/
 
 ## Verification
 
-Use the checked-in npm lockfile. Run `npm run lint`, `npm exec -- tsc --noEmit` and `npm run build`. See [known failures](RELEASE_NOTES_V1.md). There is no automated test suite. For manual checks, run both projects and exercise:
+Use the checked-in lockfile and Node 24. Run lint, tsc --noEmit, npm test, the production build and npm run test:browser. For manual checks, run both projects and exercise:
 
 - Dashboard loading and provider failures, city search and geolocation permission, hourly/daily forecast and astronomy.
 - Desktop and mobile navigation, unit changes and persisted settings across reloads.

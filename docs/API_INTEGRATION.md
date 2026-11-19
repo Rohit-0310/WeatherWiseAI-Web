@@ -1,6 +1,6 @@
 # API integration
 
-The shared Axios client in `src/shared/api/axios.ts` uses `https://localhost:7008/api/v1`. Calls run in the browser with JSON content type. No token, cookie credentials or env-based URL override is configured. The companion backend allows `http://localhost:3000` and requires a trusted HTTPS certificate locally. [Backend contract](https://github.com/Rohit-0310/WeatherWiseAI-API/blob/main/docs/API_GUIDELINES.md)
+The browser Axios client defaults to `https://localhost:7008/api/v1`. Set `NEXT_PUBLIC_WEATHER_API_URL` at build time and allow the matching browser origin in the backend. Requests currently require no caller credentials.
 
 | Calls | Requests and consumption |
 | --- | --- |
@@ -10,7 +10,7 @@ The shared Axios client in `src/shared/api/axios.ts` uses `https://localhost:700
 | GET `/Location/reverse` | Coordinates from browser geolocation. Reads a location from envelope data |
 | POST `/AiSummary` | JSON strings `location`, `temperature`, `condition`, `humidity`, `wind`, `uvIndex`. Reads the plain `summary`, `clothing`, `activity` object |
 
-GET envelopes contain `data`, `success`, `errors` (string array) and nullable `meta`. AI provider errors are HTTP 400 with nested `error`. Invalid model binding and handled backend exceptions can use the envelope instead. Axios logs and rethrows HTTP/network errors. AI generation catches errors and shows a generic retryable message. Dashboard panels use loading or empty states. Some failures share the loading path, so a failed call can look like a persistent skeleton. There is no shared structured error parser.
+GET envelopes contain `data`, `success`, `errors` (string array) and nullable `meta`. AI provider errors are HTTP 400 with nested `error`. Invalid model binding and handled backend exceptions can use the envelope instead. Axios logs and rethrows HTTP/network errors. AI generation catches errors and shows a retryable message. Hourly and daily panels distinguish loading, empty data and errors with retry. There is no shared structured error parser.
 
 ## Query policy
 
@@ -18,10 +18,10 @@ Default stale time is five minutes, with two retries and no window-focus refetch
 
 ## Compatibility gaps
 
-- AI sends temperature and wind as numeric strings without units. The backend prompt forwards them verbatim. The unit context can be ambiguous.
-- The frontend current-weather type requires cloud cover and permits optional sunrise and sunset fields. The backend current response omits all three. Astronomy has its own endpoint. The frontend also models envelope `meta` as an object, while the backend commonly returns null.
+- AI sends temperature and wind with units from the current weather request.
+- AQI can be null. Both air-quality displays use European AQI bands. Cloud cover is optional and shown as unavailable when omitted. Envelope meta can be null.
 - Reverse geocoding uses a GMT placeholder. Several display paths parse offset-free timestamps using JavaScript dates. Verify local-time behavior across browser and forecast timezones before making accuracy claims.
-- Browser URL and CORS origin are fixed. Hosted environments need an agreed configuration strategy.
+- Hosted connectivity requires an explicit browser build URL and a matching backend origin.
 
 ## Compare requests in browser developer tools
 
@@ -30,7 +30,7 @@ With a city selected, inspect `GET /api/v1/Weather/hourly?Latitude=28.61&Longitu
 Generate on the AI Summary screen sends a snapshot like the following synthetic example:
 
 ```json
-{"location":"New Delhi","temperature":"25","condition":"Rain","humidity":"80%","wind":"12","uvIndex":"2"}
+{"location":"New Delhi","temperature":"25 °C","condition":"Rain","humidity":"80%","wind":"12 km/h","uvIndex":"2"}
 ```
 
 A successful POST returns the following shape, with text generated for the supplied snapshot:

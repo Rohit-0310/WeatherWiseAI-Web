@@ -48,6 +48,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 <h2 className="text-xl font-semibold tracking-tight">Preferences</h2>
               </div>
               <button
+                aria-label="Close preferences"
                 onClick={onClose}
                 className="w-8 h-8 rounded-full bg-foreground/5 hover:bg-foreground/10 flex items-center justify-center transition-colors"
               >

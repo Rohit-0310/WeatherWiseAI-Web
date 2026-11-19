@@ -20,9 +20,13 @@ const renderIcon = (code: string, className = "w-6 h-6") => {
 };
 
 export function WeeklyForecast() {
-  const { data: forecast, isLoading } = useWeeklyForecast();
+  const { data: forecast, isLoading, isError, refetch } = useWeeklyForecast();
   const { preferences } = useAppStore();
+  const [expanded, setExpanded] = React.useState(false);
   const tempUnit = preferences.temperature === 'Celsius' ? '°C' : '°F';
+
+  if (isError && !forecast) return <p role="alert">Forecast unavailable. <button onClick={() => refetch()}>Retry</button></p>;
+  if (forecast && !forecast.days.length) return <p>No forecast available.</p>;
 
   if (isLoading || !forecast) {
     return (
@@ -42,17 +46,20 @@ export function WeeklyForecast() {
   // Calculate global min and max across the week for the progress bar bounds
   const globalMin = Math.min(...days.map((d: WeeklyForecastData) => d.minTemperature));
   const globalMax = Math.max(...days.map((d: WeeklyForecastData) => d.maxTemperature));
-  const tempRange = globalMax - globalMin;
+  const tempRange = globalMax - globalMin || 1;
 
   return (
     <div className="w-full h-full rounded-3xl bg-background/20 backdrop-blur-xl border border-border/10 p-5 flex flex-col shadow-2xl">
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-lg font-medium tracking-tight">7-Day Forecast</h3>
-        <span className="text-xs text-indigo-400 cursor-pointer hover:text-indigo-300 transition-colors flex items-center gap-1">
-          View full forecast <span className="text-[10px]">→</span>
-        </span>
+        <button aria-expanded={expanded} onClick={() => setExpanded(!expanded)} className="text-xs text-indigo-400">
+          {expanded ? "Hide details" : "View full forecast"}
+        </button>
       </div>
 
+      {expanded && <ul aria-label="Daily conditions">{days.map(day =>
+        <li key={day.date}>{day.date}: {day.condition.description}, maximum wind {day.maxWindSpeed} {forecast.units === 'Imperial' ? 'mph' : 'km/h'}</li>
+      )}</ul>}
       <div className="flex flex-col gap-0 flex-1 justify-center">
         {days.map((day: WeeklyForecastData, index: number) => {
           const date = parseISO(day.date);

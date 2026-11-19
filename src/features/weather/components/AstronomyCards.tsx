@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { format, parseISO } from 'date-fns';
 import { useAstronomy } from '../hooks/use-astronomy';
 import { useAppStore } from '@/shared/stores/app.store';
-import { Moon, Sunrise, Sunset } from 'lucide-react';
+import { Moon, Sunrise } from 'lucide-react';
 
 export function AstronomyCards() {
   const { data: astronomy, isLoading } = useAstronomy();
